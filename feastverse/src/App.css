@@ -1,0 +1,185 @@
+#root {
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.app-shell {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.content { min-height: 0; }
+
+.topbar { display: grid; grid-auto-flow: column; align-items: center; justify-content: space-between; padding: 10px 12px; background: #000; position: sticky; top: 0; z-index: 3; }
+.brand { font-family: ui-rounded, system-ui, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: 0.5px; }
+.top-actions { display: grid; grid-auto-flow: column; gap: 12px; }
+.icon-btn { background: none; border: none; color: #fff; font-size: 18px; }
+
+.stories { display: grid; grid-auto-flow: column; gap: 10px; overflow-x: auto; padding: 10px; background: #000; }
+.story { width: 72px; text-align: center; }
+.avatar { width: 64px; height: 64px; border-radius: 999px; background: linear-gradient(45deg,#ff2c55,#ffb703); padding: 3px; margin: 0 auto 6px; display: grid; }
+.avatar-inner { width: 100%; height: 100%; border-radius: 999px; background-size: cover; background-position: center; }
+.label { font-size: 12px; color: #ddd; }
+
+.feed { display: grid; grid-template-rows: auto auto 1fr; height: 100%; }
+
+/* Profile page */
+.profile-page { height: 100%; overflow-y: auto; padding-bottom: 56px; }
+.profile-top { padding: 12px; }
+.username-row { display: grid; grid-auto-flow: column; align-items: center; justify-content: start; gap: 6px; }
+.username { font-weight: 800; font-size: 20px; }
+.top-icons { margin-left: auto; display: grid; grid-auto-flow: column; gap: 12px; }
+.profile-header { display: grid; grid-template-columns: 100px 1fr; align-items: center; gap: 16px; margin-top: 12px; }
+.avatar-lg { width: 100px; height: 100px; border-radius: 999px; background-size: cover; background-position: center; outline: 3px solid #ff2c55; }
+.profile-stats { display: grid; grid-auto-flow: column; justify-content: space-around; }
+.stat { text-align: center; }
+.stat .num { font-weight: 800; font-size: 18px; }
+.stat .lbl { color: #bbb; font-size: 12px; }
+.profile-names { margin: 8px 0; font-weight: 600; }
+.profile-actions { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; }
+.pill.wide { width: 100%; }
+.pill.square { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 8px; }
+.profile-highlights { display: grid; grid-auto-flow: column; gap: 18px; margin: 14px 0; }
+.highlight { width: 72px; text-align: center; }
+.highlight-ring { width: 64px; height: 64px; border-radius: 999px; background: linear-gradient(45deg,#ff2c55,#ffb703); padding: 3px; margin: 0 auto 6px; display: grid; place-items: center; }
+.highlight-inner { width: 100%; height: 100%; border-radius: 999px; background: #111; color: #fff; display: grid; place-items: center; font-size: 24px; }
+.highlight-img { width: 100%; height: 100%; border-radius: 999px; background-size: cover; background-position: center; }
+.profile-tabs { display: grid; grid-auto-flow: column; justify-content: space-around; padding: 6px 0; border-top: 1px solid #222; border-bottom: 1px solid #222; }
+.tab { background: none; border: none; color: #fff; padding: 8px; opacity: .6; }
+.tab.active { opacity: 1; border-bottom: 2px solid #fff; }
+.profile-empty { display: grid; place-items: center; gap: 8px; padding: 40px 16px; color: #ddd; }
+.empty-illustration { width: 220px; height: 140px; background: radial-gradient(ellipse at center, #333 0, #111 60%); border-radius: 20px; }
+
+.reels-container {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  background: #000;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.reel {
+  position: relative;
+  height: 100%;
+  scroll-snap-align: start;
+}
+
+.reel-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.reel-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px;
+  color: white;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.65) 60%);
+}
+
+.actions-rail {
+  position: absolute;
+  right: 8px;
+  bottom: 110px;
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  justify-items: center;
+}
+.icon-button { background: transparent; border: none; color: #fff; display: grid; gap: 4px; justify-items: center; }
+.icon-button .count { font-size: 12px; color: #ddd; }
+
+.reel-title {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.actions { display: grid; grid-auto-flow: column; gap: 8px; margin-bottom: 8px; }
+.pill { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 6px 10px; }
+.pill.active { background: #ff2c55; border-color: #ff2c55; }
+
+.author-row { display: grid; grid-auto-flow: column; align-items: center; gap: 10px; margin-bottom: 8px; }
+.avatar-sm { width: 32px; height: 32px; border-radius: 999px; background-size: cover; background-position: center; outline: 2px solid #ff2c55; }
+.author-name { font-weight: 700; }
+.follow-pill { background: rgba(255,255,255,0.14); color: #fff; border: 1px solid rgba(255,255,255,0.25); padding: 6px 10px; border-radius: 999px; }
+.follow-pill.active { background: #fff; color: #000; border-color: #fff; }
+
+.cta {
+  background: #ff2c55;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cta.wide { width: 100%; }
+
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid #333;
+  background: #111;
+}
+.bottom-nav-item {
+  position: relative;
+  color: #bbb;
+  padding: 12px 8px;
+  background: transparent;
+  border: none;
+}
+.bottom-nav-item.active { color: #fff; font-weight: 600; }
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 24px;
+  background: #ff2c55;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.page { padding: 16px; }
+
+.restaurants-list { display: grid; gap: 12px; padding-bottom: 64px; }
+.restaurant-card { background: #1a1a1a; border: none; text-align: left; border-radius: 12px; overflow: hidden; }
+.restaurant-img { width: 100%; height: 160px; object-fit: cover; display: block; }
+.restaurant-info { padding: 10px; }
+.restaurant-name { font-size: 18px; font-weight: 700; }
+.restaurant-meta { color: #aaa; font-size: 14px; }
+
+.restaurant-hero { display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: center; }
+.restaurant-hero-img { width: 120px; height: 120px; object-fit: cover; border-radius: 12px; }
+
+.menu { display: grid; gap: 10px; margin-top: 12px; }
+.menu-item { display: grid; grid-template-columns: 1fr auto; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 10px; }
+.menu-name { font-weight: 600; }
+.menu-right { display: grid; grid-auto-flow: column; gap: 8px; align-items: center; }
+.menu-price { color: #ddd; }
+
+.link { background: none; border: none; color: #6aa0ff; padding: 0; margin-bottom: 8px; }
+
+.cart-items { display: grid; gap: 10px; }
+.cart-item { display: grid; grid-template-columns: 1fr auto; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 10px; }
+.cart-right { display: grid; grid-auto-flow: column; gap: 8px; align-items: center; }
+.qty { display: grid; grid-auto-flow: column; gap: 8px; align-items: center; }
+.qty button { width: 28px; height: 28px; border-radius: 6px; background: #333; color: #fff; border: none; }
+.price { color: #ddd; }
+.cart-summary { margin: 12px 0; display: grid; gap: 6px; }
+.row { display: grid; grid-auto-flow: column; justify-content: space-between; }
+.row.total { font-weight: 800; }
+
+.orders { display: grid; gap: 12px; }
+.order-card { background: #1a1a1a; border-radius: 12px; padding: 10px; }
+.order-top { display: grid; grid-auto-flow: column; justify-content: space-between; align-items: center; }
+.status { text-transform: capitalize; }
