@@ -1,12 +1,23 @@
+import { useState } from 'react'
 import { findRestaurantById } from '../data'
 import { useStore } from '../store.jsx'
+import AddReview from './AddReview'
 
 export default function RestaurantDetail({ restaurantId, onBack }) {
   const { state, dispatch } = useStore()
+  const [showReviewModal, setShowReviewModal] = useState(false)
   const r = findRestaurantById(restaurantId)
   if (!r) return <div className="page">Restaurant not found</div>
   const isFollow = state.follows.has(r.id)
   const isSub = state.subscriptions.has(r.id)
+  const restaurantReviews = state.reviews.filter((review) => review.restaurantId === restaurantId)
+
+  const handleSubmitReview = (reviewData) => {
+    dispatch({
+      type: 'ADD_REVIEW',
+      payload: { ...reviewData, id: `review_${Date.now()}` },
+    })
+  }
 
   return (
     <div className="page">
@@ -55,6 +66,50 @@ export default function RestaurantDetail({ restaurantId, onBack }) {
           </div>
         ))}
       </div>
+
+      <div className="reviews-section">
+        <div className="reviews-header">
+          <h3>Reviews</h3>
+          <button className="cta" onClick={() => setShowReviewModal(true)}>
+            Write a Review
+          </button>
+        </div>
+        
+        {restaurantReviews.length === 0 ? (
+          <div className="no-reviews">
+            <p>No reviews yet. Be the first to review!</p>
+          </div>
+        ) : (
+          <div className="reviews-list">
+            {restaurantReviews.map((review) => (
+              <div key={review.id} className="review-card">
+                <div className="review-header">
+                  <img src={review.userAvatar || 'https://via.placeholder.com/40'} alt={review.userName} className="review-avatar" />
+                  <div className="review-info">
+                    <div className="review-user">{review.userName}</div>
+                    <div className="review-rating">
+                      {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                    </div>
+                  </div>
+                  <div className="review-date">
+                    {new Date(review.date).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className="review-text">{review.text}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {showReviewModal && (
+        <AddReview
+          restaurantId={restaurantId}
+          restaurantName={r.name}
+          onClose={() => setShowReviewModal(false)}
+          onSubmit={handleSubmitReview}
+        />
+      )}
     </div>
   )
 }
