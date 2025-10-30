@@ -24,17 +24,32 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware
+# CORS middleware - Allow production and development origins
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Add production frontend URL if configured
+if settings.FRONTEND_URL:
+    allowed_origins.append(settings.FRONTEND_URL)
+    # Also allow without trailing slash if it has one
+    if settings.FRONTEND_URL.endswith("/"):
+        allowed_origins.append(settings.FRONTEND_URL.rstrip("/"))
+
+# Allow all onrender.com domains for easier deployment
+allowed_origins.extend([
+    "https://feastverse-frontend.onrender.com",
+    "https://feastverse.onrender.com",
+])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        settings.FRONTEND_URL,
-        "http://localhost:5173",
-        "http://127.0.0.1:5173"
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Create upload directory
