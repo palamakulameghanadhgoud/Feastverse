@@ -44,6 +44,18 @@ export default function ReelsFeed({ onOpenRestaurant }) {
     return () => observer.disconnect()
   }, [])
 
+  if (reels.length === 0) {
+    return (
+      <div className="reels-container">
+        <div className="empty-state">
+          <div className="empty-icon">📹</div>
+          <h3>No Reels Yet</h3>
+          <p>Be the first to create amazing food content!</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="reels-container">
       {items.map((r) => (

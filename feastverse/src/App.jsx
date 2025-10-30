@@ -1,5 +1,6 @@
 import './App.css'
 import { StoreProvider, useStore } from './store.jsx'
+import GoogleAuthProvider, { useAuth } from './components/AuthProvider'
 import ReelsFeed from './components/ReelsFeed'
 import Restaurants from './components/Restaurants'
 import RestaurantDetail from './components/RestaurantDetail'
@@ -10,10 +11,12 @@ import BottomNav from './components/BottomNav'
 import Profile from './components/Profile'
 import TopBar from './components/TopBar'
 import Stories from './components/Stories'
-import { useMemo, useState } from 'react'
+import Login from './components/Login'
+import { useMemo } from 'react'
 
 function InnerApp() {
   const { state, dispatch } = useStore()
+  const { user, isLoading } = useAuth()
   const cartCount = useMemo(
     () => Object.values(state.cartItems).reduce((a, it) => a + it.qty, 0),
     [state.cartItems]
@@ -21,6 +24,20 @@ function InnerApp() {
 
   const navigate = (route, params) =>
     dispatch({ type: 'NAVIGATE', payload: { route, params } })
+
+  // Show login page if not authenticated
+  if (!isLoading && !user) {
+    return <Login />
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div style={{ display: 'grid', placeItems: 'center', height: '100vh', background: '#000', color: '#fff' }}>
+        Loading...
+      </div>
+    )
+  }
 
   let content = null
   if (state.currentRoute === 'feed') {
@@ -65,8 +82,10 @@ function InnerApp() {
 
 export default function App() {
   return (
-    <StoreProvider>
-      <InnerApp />
-    </StoreProvider>
+    <GoogleAuthProvider>
+      <StoreProvider>
+        <InnerApp />
+      </StoreProvider>
+    </GoogleAuthProvider>
   )
 }

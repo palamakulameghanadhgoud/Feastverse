@@ -1,15 +1,39 @@
+import { useState } from 'react'
 import { useStore } from '../store.jsx'
+import { useAuth } from './AuthProvider'
+import EditProfile from './EditProfile'
 
 export default function Profile() {
-  const { state } = useStore()
-  const user = {
-    username: 'meghanadhgoud_',
-    fullName: 'Meghanadh Goud',
-    avatar:
-      'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop',
+  const { state, dispatch } = useStore()
+  const { user: authUser, logout } = useAuth()
+  const [showEditModal, setShowEditModal] = useState(false)
+  
+  const handleLogout = () => {
+    logout()
+    dispatch({ type: 'NAVIGATE', payload: { route: 'feed', params: {} } })
+  }
+
+  const handleSaveProfile = (profileData) => {
+    dispatch({ type: 'UPDATE_PROFILE', payload: profileData })
+  }
+  
+  // Use authenticated user data if available, otherwise show default
+  const user = authUser ? {
+    username: state.userProfile.username || authUser.email?.split('@')[0] || 'user',
+    fullName: state.userProfile.fullName || authUser.name || `${authUser.given_name || ''} ${authUser.family_name || ''}`.trim() || 'User',
+    avatar: authUser.picture || 'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop',
+    bio: state.userProfile.bio || '',
+    posts: state.reviews.length,
+    followers: 0,
+    following: state.follows.size,
+  } : {
+    username: 'user',
+    fullName: 'User',
+    avatar: 'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop',
+    bio: '',
     posts: 0,
-    followers: 157,
-    following: 228,
+    followers: 0,
+    following: 0,
   }
 
   return (
@@ -34,12 +58,24 @@ export default function Profile() {
           </div>
         </div>
         <div className="profile-names">{user.fullName}</div>
+        {user.bio && <div className="profile-bio">{user.bio}</div>}
         <div className="profile-actions">
-          <button className="pill wide">Edit profile</button>
+          <button className="pill wide" onClick={() => setShowEditModal(true)}>Edit profile</button>
           <button className="pill wide">Share profile</button>
-          <button className="pill square" aria-label="Add person">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="7" r="4" stroke="#fff" strokeWidth="1.6"/><path d="M2 21c1.8-4.5 6.2-5.5 9-5.5" stroke="#fff" strokeWidth="1.6"/><path d="M19 10v8M15 14h8" stroke="#fff" strokeWidth="1.6"/></svg>
-          </button>
+          {authUser && (
+            <button 
+              className="pill square" 
+              aria-label="Logout"
+              onClick={handleLogout}
+              title="Logout"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="#fff" strokeWidth="1.6"/>
+                <polyline points="16 17 21 12 16 7" stroke="#fff" strokeWidth="1.6"/>
+                <line x1="21" y1="12" x2="9" y2="12" stroke="#fff" strokeWidth="1.6"/>
+              </svg>
+            </button>
+          )}
         </div>
         <div className="profile-highlights">
           <div className="highlight">
@@ -67,9 +103,12 @@ export default function Profile() {
       </div>
       <div className="profile-empty">
         <div className="empty-illustration" />
-        <h3>Create your first post</h3>
-        <p>Give this space some love.</p>
+        <h3>Share Your Food Experiences</h3>
+        <p>Start reviewing restaurants to share your foodie journey.</p>
       </div>
+      {showEditModal && (
+        <EditProfile onClose={() => setShowEditModal(false)} onSave={handleSaveProfile} />
+      )}
     </div>
   )
 }

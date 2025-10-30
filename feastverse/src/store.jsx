@@ -9,6 +9,14 @@ const initialState = {
   likes: new Set(), // set of reel ids
   follows: new Set(), // restaurant ids
   subscriptions: new Set(), // restaurant ids
+  userProfile: {
+    username: '',
+    fullName: '',
+    bio: '',
+    website: '',
+    phone: '',
+  },
+  reviews: [], // user reviews
 }
 
 function reducer(state, action) {
@@ -100,6 +108,16 @@ function reducer(state, action) {
       if (next.has(id)) next.delete(id)
       else next.add(id)
       return { ...state, subscriptions: next }
+    }
+    case 'UPDATE_PROFILE':
+      return { ...state, userProfile: { ...state.userProfile, ...action.payload } }
+    case 'ADD_REVIEW':
+      return { ...state, reviews: [action.payload, ...state.reviews] }
+    case 'DELETE_REVIEW': {
+      return {
+        ...state,
+        reviews: state.reviews.filter((r) => r.id !== action.payload.reviewId),
+      }
     }
     default:
       return state
