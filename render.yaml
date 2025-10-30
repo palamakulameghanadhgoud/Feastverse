@@ -52,7 +52,6 @@ services:
   - type: web
     name: feastverse-frontend
     runtime: static
-    plan: free
     branch: main
     rootDir: feastverse
     buildCommand: npm install && npm run build
