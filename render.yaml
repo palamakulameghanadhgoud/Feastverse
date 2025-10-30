@@ -52,7 +52,6 @@ services:
   - type: web
     name: feastverse-frontend
     runtime: static
-    region: oregon
     plan: free
     branch: main
     rootDir: feastverse
