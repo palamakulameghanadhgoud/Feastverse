@@ -80,26 +80,32 @@ export default function Reel({ reel, onOpenRestaurant }) {
           <HeartIcon filled={isLiked} />
           <span className="count">{likeCount}</span>
         </button>
-        <button className="icon-button" onClick={() => {}}>
-          <CommentIcon />
-          <span className="count">16</span>
-        </button>
         <button
           className="icon-button"
           onClick={() => {
-            const text = `${reel.title}`
-            if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text)
+            const text = `Check out this reel: ${reel.title}`
+            if (navigator.clipboard?.writeText) {
+              navigator.clipboard.writeText(text)
+              alert('Link copied to clipboard!')
+            }
           }}
         >
           <ShareIcon />
-          <span className="count">23</span>
         </button>
       </div>
       <div className="reel-overlay">
-        {rest ? (
-          <div className="author-row">
-            <div className="avatar-sm" style={{ backgroundImage: `url(${rest.image})` }} />
-            <div className="author-name">{rest.name}</div>
+        <div className="author-row">
+          <div 
+            className="avatar-sm" 
+            style={{ 
+              backgroundImage: reel.userPicture ? `url(${reel.userPicture})` : 'none',
+              backgroundColor: reel.userPicture ? 'transparent' : '#555'
+            }} 
+          />
+          <div className="author-name">
+            {reel.userName || reel.userUsername || 'Unknown User'}
+          </div>
+          {rest && (
             <button
               className={`follow-pill${isFollowing ? ' active' : ''}`}
               onClick={() =>
@@ -108,12 +114,14 @@ export default function Reel({ reel, onOpenRestaurant }) {
             >
               {isFollowing ? 'Following' : 'Follow'}
             </button>
-          </div>
-        ) : null}
+          )}
+        </div>
         <div className="reel-title">{reel.title}</div>
-        <button className="cta" onClick={() => onOpenRestaurant(reel.restaurantId)}>
-          Order from this place
-        </button>
+        {rest && (
+          <button className="cta" onClick={() => onOpenRestaurant(reel.restaurantId)}>
+            Order from {rest.name}
+          </button>
+        )}
       </div>
     </div>
   )

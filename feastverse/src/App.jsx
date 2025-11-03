@@ -42,39 +42,42 @@ function InnerApp() {
   let content = null
   if (state.currentRoute === 'feed') {
     content = (
-      <div className="feed">
+      <div className="feed" key="feed-page">
         <TopBar />
         <Stories />
         <ReelsFeed onOpenRestaurant={(id) => navigate('restaurant', { id })} />
       </div>
     )
   } else if (state.currentRoute === 'restaurants') {
-    content = <Restaurants onOpenDetail={(id) => navigate('restaurant', { id })} />
+    content = <Restaurants key="restaurants-page" onOpenDetail={(id) => navigate('restaurant', { id })} />
   } else if (state.currentRoute === 'restaurant') {
     const id = state.routeParams.id
-    content = <RestaurantDetail restaurantId={id} onBack={() => navigate('restaurants')} />
+    content = <RestaurantDetail key={`restaurant-${id}`} restaurantId={id} onBack={() => navigate('restaurants')} />
   } else if (state.currentRoute === 'cart') {
     content = (
-      <Cart onCheckout={({ total, etaMins }) => navigate('checkout', { total, etaMins })} />
+      <Cart key="cart-page" onCheckout={({ total, etaMins }) => navigate('checkout', { total, etaMins })} />
     )
   } else if (state.currentRoute === 'checkout') {
     const { total, etaMins } = state.routeParams
     content = (
       <Checkout
+        key="checkout-page"
         total={total}
         etaMins={etaMins}
         onOrderPlaced={() => navigate('orders')}
       />
     )
   } else if (state.currentRoute === 'orders') {
-    content = <Orders />
+    content = <Orders key="orders-page" />
   } else if (state.currentRoute === 'profile') {
-    content = <Profile />
+    content = <Profile key="profile-page" />
   }
 
   return (
     <div className="app-shell">
-      <div className="content">{content}</div>
+      <div className="content" key={state.currentRoute}>
+        {content}
+      </div>
       <BottomNav current={state.currentRoute} onNavigate={navigate} cartCount={cartCount} />
     </div>
   )

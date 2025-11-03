@@ -1,12 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from datetime import datetime
 from bson import ObjectId
 import random
+import os
+import shutil
+import tempfile
 
 from .. import schemas, auth
 from ..database import get_database
 from ..models import UserDB
 from ..email import send_welcome_email, send_username_change_email
+from ..cloudinary_service import upload_image
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -222,3 +226,36 @@ async def update_profile(
         "phone": updated_user.get("phone"),
         "created_at": updated_user["created_at"]
     }
+
+
+@router.post("/me/avatar")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(auth.get_current_user)
+):
+    """Upload and set current user's profile picture (stored in Cloudinary)"""
+    db = get_database()
+
+    # Save to a temporary file
+    suffix = os.path.splitext(file.filename)[1] or ".jpg"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        shutil.copyfileobj(file.file, tmp)
+        tmp_path = tmp.name
+
+    try:
+        result = upload_image(tmp_path, folder="feastverse/avatars")
+        if not result.get("success"):
+            raise HTTPException(status_code=500, detail=f"Failed to upload image: {result.get('error')}")
+
+        await db.users.update_one(
+            {"_id": ObjectId(current_user["_id"])},
+            {"$set": {"picture": result["url"], "updated_at": datetime.utcnow()}}
+        )
+
+        return {"picture": result["url"]}
+    finally:
+        try:
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+        except Exception:
+            pass

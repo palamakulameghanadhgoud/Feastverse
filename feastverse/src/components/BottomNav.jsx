@@ -1,8 +1,13 @@
 export default function BottomNav({ current, onNavigate, cartCount }) {
+  const handleNavigate = (id) => {
+    console.log('Navigating to:', id)
+    onNavigate(id, {})
+  }
+
   const Item = ({ id, label }) => (
     <button
       className={`bottom-nav-item${current === id ? ' active' : ''}`}
-      onClick={() => onNavigate(id)}
+      onClick={() => handleNavigate(id)}
       title={label}
     >
       <span className="icon">
@@ -26,9 +31,9 @@ export default function BottomNav({ current, onNavigate, cartCount }) {
   )
   return (
     <nav className="bottom-nav">
-      <Item id="feed" label="Home" />
-      <Item id="restaurants" label="Search" />
-      <Item id="orders" label="Reels" />
+      <Item id="feed" label="Home (Reels)" />
+      <Item id="restaurants" label="Restaurants" />
+      <Item id="orders" label="Orders" />
       <Item id="profile" label="Profile" />
     </nav>
   )

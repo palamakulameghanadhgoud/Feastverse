@@ -85,3 +85,4 @@ def verify_google_token(token: str):
             }
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid Google token: {str(e)}")
+

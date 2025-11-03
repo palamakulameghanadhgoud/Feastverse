@@ -1,48 +1,51 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Reel from './Reel'
-import { reels } from '../data'
+import UploadReel from './UploadReel'
+import { useAuth } from './AuthProvider'
+import apiClient from '../api/client'
 
 export default function ReelsFeed({ onOpenRestaurant }) {
-  const [pagesLoaded, setPagesLoaded] = useState(1)
-  const sentinelRef = useRef(null)
-  const loadingRef = useRef(false)
-
-  const items = useMemo(() => {
-    const out = []
-    for (let p = 0; p < pagesLoaded; p += 1) {
-      out.push(
-        ...reels.map((r, idx) => ({
-          ...r,
-          baseId: r.id,
-          // ensure unique keys per page
-          id: `${r.id}-p${p}-${idx}`,
-        }))
-      )
-    }
-    return out
-  }, [pagesLoaded])
+  const [reels, setReels] = useState([])
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const { user } = useAuth()
 
   useEffect(() => {
-    const node = sentinelRef.current
-    if (!node) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !loadingRef.current) {
-            loadingRef.current = true
-            setPagesLoaded((prev) => prev + 1)
-            // small debounce to prevent rapid multi-fires
-            setTimeout(() => {
-              loadingRef.current = false
-            }, 300)
-          }
-        })
-      },
-      { root: null, threshold: 0.1 }
-    )
-    observer.observe(node)
-    return () => observer.disconnect()
+    loadReels()
   }, [])
+
+  const loadReels = async () => {
+    try {
+      const data = await apiClient.getReels()
+      setReels(
+        data.map((r) => ({
+          id: r.id,
+          title: r.title,
+          videoUrl: r.video_url,
+          thumbnailUrl: r.thumbnail_url,
+          restaurantId: r.restaurant_id,
+          likes: r.likes || 0,
+          userName: r.user_name,
+          userUsername: r.user_username,
+          userPicture: r.user_picture,
+        }))
+      )
+    } catch (e) {
+      console.error('Failed to load reels', e)
+    }
+  }
+
+  const handleUploadSuccess = () => {
+    // Reload reels after successful upload
+    loadReels()
+  }
+
+  const handleUploadClick = () => {
+    if (!user) {
+      alert('Please login to upload reels')
+      return
+    }
+    setShowUploadModal(true)
+  }
 
   if (reels.length === 0) {
     return (
@@ -51,18 +54,73 @@ export default function ReelsFeed({ onOpenRestaurant }) {
           <div className="empty-icon">📹</div>
           <h3>No Reels Yet</h3>
           <p>Be the first to create amazing food content!</p>
+          <button 
+            onClick={handleUploadClick}
+            style={{
+              marginTop: '20px',
+              padding: '12px 24px',
+              backgroundColor: '#ff2c55',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+          >
+            Upload Your First Reel
+          </button>
         </div>
+        {showUploadModal && (
+          <UploadReel 
+            onClose={() => setShowUploadModal(false)} 
+            onSuccess={handleUploadSuccess}
+          />
+        )}
       </div>
     )
   }
 
   return (
-    <div className="reels-container">
-      {items.map((r) => (
-        <Reel key={r.id} reel={r} onOpenRestaurant={onOpenRestaurant} />
-      ))}
-      <div ref={sentinelRef} style={{ height: 1 }} />
-    </div>
+    <>
+      <button
+        onClick={handleUploadClick}
+        style={{
+          position: 'fixed',
+          bottom: '80px',
+          right: '20px',
+          width: '56px',
+          height: '56px',
+          borderRadius: '50%',
+          backgroundColor: '#ff2c55',
+          color: '#fff',
+          border: 'none',
+          fontSize: '28px',
+          cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+          zIndex: 100,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+        title="Upload Reel"
+      >
+        +
+      </button>
+      
+      <div className="reels-container">
+        {reels.map((r) => (
+          <Reel key={r.id} reel={r} onOpenRestaurant={onOpenRestaurant} />
+        ))}
+      </div>
+      
+      {showUploadModal && (
+        <UploadReel 
+          onClose={() => setShowUploadModal(false)} 
+          onSuccess={handleUploadSuccess}
+        />
+      )}
+    </>
   )
 }
 

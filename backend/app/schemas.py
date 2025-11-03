@@ -101,6 +101,9 @@ class Reel(ReelBase):
     thumbnail_url: Optional[str]
     created_at: datetime
     likes: int = 0
+    user_name: Optional[str] = None
+    user_username: Optional[str] = None
+    user_picture: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -117,6 +120,9 @@ class Story(BaseModel):
     image_url: str
     created_at: datetime
     expires_at: datetime
+    user_name: Optional[str] = None
+    user_username: Optional[str] = None
+    user_picture: Optional[str] = None
 
     class Config:
         from_attributes = True

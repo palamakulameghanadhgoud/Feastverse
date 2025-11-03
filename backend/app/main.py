@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 
 from .config import settings
 from .database import connect_to_mongo, close_mongo_connection
-from .routers import auth, restaurants, reviews, reels, orders
+from .routers import auth, restaurants, reviews, reels, orders, stories, users
 
 
 @asynccontextmanager
@@ -65,6 +65,8 @@ app.include_router(restaurants.router)
 app.include_router(reviews.router)
 app.include_router(reels.router)
 app.include_router(orders.router)
+app.include_router(stories.router)
+app.include_router(users.router)
 
 
 @app.get("/")

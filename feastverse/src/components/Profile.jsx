@@ -1,28 +1,96 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useStore } from '../store.jsx'
 import { useAuth } from './AuthProvider'
 import EditProfile from './EditProfile'
+import apiClient from '../api/client'
 
 export default function Profile() {
   const { state, dispatch } = useStore()
-  const { user: authUser, logout } = useAuth()
+  const { user: authUser, logout, login } = useAuth()
   const [showEditModal, setShowEditModal] = useState(false)
+  const [userData, setUserData] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  
+  const loadUserProfile = async () => {
+    if (!authUser) {
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const data = await apiClient.getCurrentUser()
+      console.log('Loaded user profile:', data)
+      setUserData(data)
+      // Update auth context with latest data
+      login({ ...authUser, ...data })
+    } catch (error) {
+      console.error('Failed to load user profile:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadUserProfile()
+  }, []) // Only load once on mount
+
+  // Reload when returning to profile
+  useEffect(() => {
+    if (authUser && !isLoading) {
+      loadUserProfile()
+    }
+  }, [authUser?.id]) // Reload when user ID changes
   
   const handleLogout = () => {
     logout()
     dispatch({ type: 'NAVIGATE', payload: { route: 'feed', params: {} } })
   }
 
-  const handleSaveProfile = (profileData) => {
+  const handleSaveProfile = async (profileData) => {
+    // Reload profile after saving
+    await loadUserProfile()
     dispatch({ type: 'UPDATE_PROFILE', payload: profileData })
+  }
+
+  const handleShareProfile = () => {
+    if (!userData?.username) {
+      alert('Please set a username first to share your profile!')
+      setShowEditModal(true)
+      return
+    }
+
+    const profileUrl = `${window.location.origin}/profile/${userData.username}`
+    
+    // Copy to clipboard
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(profileUrl).then(() => {
+        alert(`Profile URL copied to clipboard!\n${profileUrl}`)
+      }).catch(() => {
+        // Fallback: show the URL
+        prompt('Copy this URL to share your profile:', profileUrl)
+      })
+    } else {
+      // Fallback for older browsers
+      prompt('Copy this URL to share your profile:', profileUrl)
+    }
   }
   
   // Use authenticated user data if available, otherwise show default
-  const user = authUser ? {
-    username: state.userProfile.username || authUser.email?.split('@')[0] || 'user',
-    fullName: state.userProfile.fullName || authUser.name || `${authUser.given_name || ''} ${authUser.family_name || ''}`.trim() || 'User',
+  const user = userData ? {
+    username: userData.username || authUser?.email?.split('@')[0] || 'user',
+    fullName: userData.name || authUser?.name || 'User',
+    avatar: userData.picture || authUser?.picture || 'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop',
+    bio: userData.bio || '',
+    website: userData.website || '',
+    posts: state.reviews.length,
+    followers: 0,
+    following: state.follows.size,
+  } : authUser ? {
+    username: authUser.email?.split('@')[0] || 'user',
+    fullName: authUser.name || 'User',
     avatar: authUser.picture || 'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop',
-    bio: state.userProfile.bio || '',
+    bio: '',
+    website: '',
     posts: state.reviews.length,
     followers: 0,
     following: state.follows.size,
@@ -31,9 +99,20 @@ export default function Profile() {
     fullName: 'User',
     avatar: 'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop',
     bio: '',
+    website: '',
     posts: 0,
     followers: 0,
     following: 0,
+  }
+
+  if (isLoading) {
+    return (
+      <div className="profile-page">
+        <div style={{ textAlign: 'center', padding: '40px', color: '#fff' }}>
+          Loading profile...
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -59,9 +138,16 @@ export default function Profile() {
         </div>
         <div className="profile-names">{user.fullName}</div>
         {user.bio && <div className="profile-bio">{user.bio}</div>}
+        {user.website && (
+          <div className="profile-bio">
+            <a href={user.website} target="_blank" rel="noopener noreferrer" style={{ color: '#4a9eff' }}>
+              {user.website}
+            </a>
+          </div>
+        )}
         <div className="profile-actions">
           <button className="pill wide" onClick={() => setShowEditModal(true)}>Edit profile</button>
-          <button className="pill wide">Share profile</button>
+          <button className="pill wide" onClick={handleShareProfile}>Share profile</button>
           {authUser && (
             <button 
               className="pill square" 

@@ -18,7 +18,7 @@ router = APIRouter(prefix="/reels", tags=["reels"])
 
 @router.get("/", response_model=List[schemas.Reel])
 async def get_reels(skip: int = 0, limit: int = 100):
-    """Get all reels"""
+    """Get all reels with user information"""
     db = get_database()
     reels = await db.reels.find().sort("created_at", -1).skip(skip).limit(limit).to_list(length=limit)
     
@@ -29,7 +29,10 @@ async def get_reels(skip: int = 0, limit: int = 100):
             "liked_reels": {"$in": [str(reel["_id"])]}
         })
         
-        result.append({
+        # Get user info
+        user = await db.users.find_one({"_id": ObjectId(reel["user_id"])})
+        
+        reel_data = {
             "id": str(reel["_id"]),
             "user_id": reel["user_id"],
             "restaurant_id": reel.get("restaurant_id"),
@@ -38,7 +41,15 @@ async def get_reels(skip: int = 0, limit: int = 100):
             "thumbnail_url": reel.get("thumbnail_url"),
             "created_at": reel["created_at"],
             "likes": likes_count
-        })
+        }
+        
+        # Add user info if available
+        if user:
+            reel_data["user_name"] = user.get("name", "Unknown User")
+            reel_data["user_username"] = user.get("username", user.get("email", "").split("@")[0])
+            reel_data["user_picture"] = user.get("picture")
+        
+        result.append(reel_data)
     
     return result
 

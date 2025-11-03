@@ -61,6 +61,32 @@ class APIClient {
     })
   }
 
+  async uploadAvatar(imageFile) {
+    const formData = new FormData()
+    formData.append('file', imageFile)
+
+    const headers = {}
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`
+    }
+
+    const response = await fetch(`${this.baseURL}/auth/me/avatar`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to upload avatar')
+    }
+
+    return response.json()
+  }
+
+  async getUserByUsername(username) {
+    return this.request(`/users/${username}`, { skipAuth: true })
+  }
+
   // Restaurants
   async getRestaurants() {
     return this.request('/restaurants')
@@ -177,6 +203,33 @@ class APIClient {
 
   async updateOrderStatus(id) {
     return this.request(`/orders/${id}/status`, { method: 'PATCH' })
+  }
+
+  // Stories
+  async getStories() {
+    return this.request('/stories')
+  }
+
+  async createStory(imageFile) {
+    const formData = new FormData()
+    formData.append('file', imageFile)
+
+    const headers = {}
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`
+    }
+
+    const response = await fetch(`${this.baseURL}/stories`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to upload story')
+    }
+
+    return response.json()
   }
 }
 
