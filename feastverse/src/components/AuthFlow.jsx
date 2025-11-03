@@ -113,6 +113,16 @@ export default function AuthFlow() {
       <div className="auth-flow">
         <div className="auth-container">
           <div className="auth-header">
+            <img 
+              src="/wa.png" 
+              alt="FeastVerse Logo" 
+              style={{ 
+                height: '60px', 
+                width: 'auto',
+                marginBottom: '20px',
+                objectFit: 'contain'
+              }} 
+            />
             <h1>Welcome to Feastverse! 🍽️</h1>
             <p>Choose your username</p>
             {userInfo && (
@@ -177,6 +187,16 @@ export default function AuthFlow() {
     <div className="auth-flow">
       <div className="auth-container">
         <div className="auth-header">
+          <img 
+            src="/wa.png" 
+            alt="FeastVerse Logo" 
+            style={{ 
+              height: '80px', 
+              width: 'auto',
+              marginBottom: '20px',
+              objectFit: 'contain'
+            }} 
+          />
           <h1>Welcome to Feastverse</h1>
           <p>Discover amazing food experiences</p>
         </div>

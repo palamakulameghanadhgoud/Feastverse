@@ -12,11 +12,13 @@ import Profile from './components/Profile'
 import TopBar from './components/TopBar'
 import Stories from './components/Stories'
 import Login from './components/Login'
-import { useMemo } from 'react'
+import SplashScreen from './components/SplashScreen'
+import { useMemo, useState, useEffect } from 'react'
 
 function InnerApp() {
   const { state, dispatch } = useStore()
   const { user, isLoading } = useAuth()
+  const [showSplash, setShowSplash] = useState(true)
   const cartCount = useMemo(
     () => Object.values(state.cartItems).reduce((a, it) => a + it.qty, 0),
     [state.cartItems]
@@ -24,6 +26,24 @@ function InnerApp() {
 
   const navigate = (route, params) =>
     dispatch({ type: 'NAVIGATE', payload: { route, params } })
+
+  // Check if splash has been shown in this session
+  useEffect(() => {
+    const splashShown = sessionStorage.getItem('splashShown')
+    if (splashShown === 'true') {
+      setShowSplash(false)
+    }
+  }, [])
+
+  const handleSplashComplete = () => {
+    sessionStorage.setItem('splashShown', 'true')
+    setShowSplash(false)
+  }
+
+  // Show splash screen first
+  if (showSplash) {
+    return <SplashScreen onComplete={handleSplashComplete} />
+  }
 
   // Show login page if not authenticated
   if (!isLoading && !user) {

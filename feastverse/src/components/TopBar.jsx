@@ -1,7 +1,18 @@
 export default function TopBar() {
   return (
     <header className="topbar">
-      <div className="brand">FeastVerse</div>
+      <div className="brand" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <img 
+          src="/wa.png" 
+          alt="FeastVerse Logo" 
+          style={{ 
+            height: '32px', 
+            width: 'auto',
+            objectFit: 'contain'
+          }} 
+        />
+        <span>FeastVerse</span>
+      </div>
       <div className="top-actions">
         <button className="icon-btn" title="Activity">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z" stroke="#fff" strokeWidth="1.6" fill="none"/></svg>

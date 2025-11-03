@@ -1,23 +1,44 @@
 # 🍽️ Feastverse - The Ultimate Food Social Platform
 
-A full-stack food delivery and social media platform with Google OAuth, video reels, reviews, and real-time ordering.
+A full-stack food delivery and social media platform with Google OAuth, video reels, stories, reviews, and real-time ordering.
 
-## ✨ What's New
+## ✨ Features
 
-### 🔐 Smart Authentication
-- **Separate Login/Signup** - Existing users login automatically, new users choose username
+### 🔐 Authentication & Profiles
+- **Google OAuth** - Secure login/signup with Google
 - **Username System** - Unique @username with real-time availability check
-- **Email Notifications** - Beautiful welcome emails and username change confirmations
+- **Profile Management** - Update username, bio, website, phone
+- **Profile Pictures** - Upload avatar to Cloudinary
+- **Public Profiles** - Shareable profile URLs at `/u/{username}`
+- **Email Notifications** - Welcome emails and username change confirmations
 
-### ☁️ Cloud Storage
-- **Cloudinary Integration** - All videos stored in cloud with auto-generated thumbnails
-- **No Local Storage** - Videos delivered via global CDN
-- **Automatic Cleanup** - Videos deleted from cloud when removed
+### 📹 Video Reels (Cloudinary)
+- **Upload Reels** - Upload videos directly to Cloudinary with auto-thumbnails
+- **Video Feed** - Infinite scroll feed with auto-play
+- **Like/Unlike** - Real-time like counts persisted to database
+- **Restaurant Tags** - Link reels to restaurants
+- **Delete Reels** - Remove reels (also deletes from Cloudinary)
 
-### 📧 Email Service
-- **Welcome Emails** - Professional HTML emails on signup
-- **Notifications** - Username change confirmations
-- **Optional** - Can be disabled for development
+### � Instagram-Style Stories
+- **24-Hour Stories** - Upload images that expire after 24 hours
+- **Story Feed** - View active stories from users
+- **Cloudinary Storage** - Images stored and served via CDN
+- **Auto-Expiry** - Backend automatically filters expired stories
+
+### ☁️ Cloud Infrastructure
+- **Cloudinary Integration** - All media stored in cloud with CDN delivery
+- **MongoDB Atlas** - Cloud NoSQL database
+- **No Local Storage** - Everything in the cloud
+- **Automatic Cleanup** - Videos/images deleted from cloud when removed
+
+### 🎨 User Experience
+- **Seamless Navigation** - Instant page changes (no refresh needed)
+- **React Keys** - Proper component mounting/unmounting
+- **Real Data Only** - No dummy likes/comments, only actual data
+- **Image Cropping** - Built-in cropper for perfect profile pictures
+- **Story Viewer** - Full-screen story viewing experience
+- **Mobile First** - Optimized for mobile with touch gestures
+- **Loading States** - Visual feedback for all async operations
 
 ## 🚀 Quick Start
 
@@ -57,40 +78,69 @@ Visit: http://localhost:5173
 - **JWT** - Secure tokens
 - **SMTP** - Email service
 - **Motor** - Async MongoDB driver
+- **Pydantic** - Data validation
 
 ### Frontend
 - **React 19** - Latest React with hooks
 - **Vite** - Lightning-fast build tool
 - **Google OAuth** - `@react-oauth/google`
+- **react-easy-crop** - Image cropping functionality
 - **Modern CSS** - Grid & Flexbox layouts
+- **sessionStorage** - Client-side session management
 
-## 🌟 Key Features
+## 🌟 Complete Feature List
 
-### Authentication
-✅ Google OAuth Login/Signup
-✅ Username selection & validation
-✅ Profile management
-✅ Session persistence
+### 🔐 Authentication & User Management
+✅ Google OAuth Login/Signup  
+✅ Username selection with real-time availability check  
+✅ Profile editing (username, bio, website, phone)  
+✅ Avatar upload to Cloudinary  
+✅ Public shareable profile URLs (`/u/{username}`)  
+✅ Session persistence with JWT  
+✅ Welcome email on signup  
+✅ Username change notification emails  
 
-### Content
-✅ Upload video reels (Cloudinary)
-✅ Write restaurant reviews
-✅ Follow restaurants
-✅ Like content
-✅ Share stories
+### 📹 Video Reels (Full Implementation)
+✅ Upload video reels to Cloudinary  
+✅ Auto-generate video thumbnails  
+✅ Video feed with infinite scroll  
+✅ Auto-play videos on scroll  
+✅ Like/unlike reels (real-time counts)  
+✅ Link reels to restaurants  
+✅ Delete reels (removes from Cloudinary)  
+✅ View reel details  
 
-### Commerce
-✅ Browse restaurants
-✅ View menus
-✅ Add to cart
-✅ Place orders
-✅ Track delivery
+### 📸 Stories (Instagram-Style)
+✅ Upload image stories (24-hour expiry)  
+✅ View active stories feed  
+✅ Auto-expire old stories  
+✅ Cloudinary image storage  
+✅ "Add Story" button for logged-in users  
 
-### Social
-✅ User profiles
-✅ Follow system
-✅ Subscription notifications
-✅ Like & comment features
+### 🍽️ Restaurants & Ordering
+✅ Browse restaurants  
+✅ View restaurant menus  
+✅ Follow/unfollow restaurants  
+✅ Add items to cart  
+✅ Place orders  
+✅ Track order status  
+✅ Order history  
+
+### ⭐ Reviews & Social
+✅ Write restaurant reviews  
+✅ Rate restaurants (1-5 stars)  
+✅ Like content  
+✅ Follow system  
+✅ Subscription notifications  
+
+### 🎨 UI/UX
+✅ Mobile-first responsive design  
+✅ Bottom navigation bar  
+✅ Top action bar  
+✅ Modal dialogs  
+✅ Loading states  
+✅ Empty states with CTAs  
+✅ Toast notifications
 
 ## 🔑 Required Services
 
@@ -123,28 +173,45 @@ Feastverse/
 ├── backend/                  # Python FastAPI backend
 │   ├── app/
 │   │   ├── routers/         # API endpoints
-│   │   ├── models.py        # MongoDB models
-│   │   ├── schemas.py       # Pydantic schemas
-│   │   ├── auth.py          # Authentication logic
-│   │   ├── email.py         # Email templates & sender
-│   │   ├── cloudinary_service.py  # Video upload
+│   │   │   ├── auth.py      # Auth endpoints (login/signup/profile)
+│   │   │   ├── reels.py     # Reels endpoints (upload/like/delete)
+│   │   │   ├── stories.py   # Stories endpoints (NEW)
+│   │   │   ├── users.py     # Public profile endpoints (NEW)
+│   │   │   ├── restaurants.py
+│   │   │   ├── reviews.py
+│   │   │   └── orders.py
+│   │   ├── models.py        # MongoDB models (User, Reel, Story, etc.)
+│   │   ├── schemas.py       # Pydantic validation schemas
+│   │   ├── auth.py          # Authentication helpers (JWT, Google OAuth)
+│   │   ├── email.py         # Email templates & SMTP sender
+│   │   ├── cloudinary_service.py  # Video/image upload to Cloudinary
 │   │   ├── database.py      # MongoDB connection
-│   │   └── main.py          # FastAPI app
+│   │   ├── config.py        # Environment settings
+│   │   └── main.py          # FastAPI app initialization
 │   ├── requirements.txt     # Python dependencies
-│   └── run.py              # Server startup
+│   ├── run.py              # Server startup script
+│   └── .env                # Environment variables (create this)
 │
 ├── feastverse/             # React frontend
 │   ├── src/
 │   │   ├── components/     # React components
-│   │   │   ├── AuthFlow.jsx      # Login/Signup flow
-│   │   │   ├── Profile.jsx       # User profile
-│   │   │   ├── ReelsFeed.jsx     # Video feed
+│   │   │   ├── AuthFlow.jsx      # Google OAuth flow
+│   │   │   ├── Profile.jsx       # User profile with share URL
+│   │   │   ├── EditProfile.jsx   # Edit profile + avatar upload (NEW)
+│   │   │   ├── ReelsFeed.jsx     # Video feed from API
+│   │   │   ├── Reel.jsx          # Single reel with like button
+│   │   │   ├── UploadReel.jsx    # Upload modal (NEW)
+│   │   │   ├── Stories.jsx       # Stories bar with upload (UPDATED)
+│   │   │   ├── PublicProfile.jsx # Shareable profile page (NEW)
+│   │   │   ├── TopBar.jsx        # Top bar with upload button
 │   │   │   └── ...
 │   │   ├── api/
-│   │   │   └── client.js   # API client
-│   │   ├── App.jsx         # Main app
+│   │   │   └── client.js   # API client with all endpoints (UPDATED)
+│   │   ├── App.jsx         # Main app router
+│   │   ├── main.jsx        # Entry point with /u/:username routing
 │   │   └── App.css         # Styles
-│   └── package.json
+│   ├── package.json
+│   └── .env                # Frontend env vars (create this)
 │
 └── Documentation/
     ├── COMPLETE_SETUP_GUIDE.md
@@ -156,14 +223,45 @@ Feastverse/
 ## 🎯 API Endpoints
 
 ### Authentication
-- `POST /auth/check-google-user` - Check user exists
-- `POST /auth/google-login` - Login
-- `POST /auth/google-signup` - Signup
-- `POST /auth/check-username` - Username availability
-- `GET /auth/me` - Current user
-- `PATCH /auth/me` - Update profile
+- `POST /auth/check-google-user` - Check if user exists
+- `POST /auth/google-login` - Login existing user
+- `POST /auth/google-signup` - Signup new user with username
+- `POST /auth/check-username` - Check username availability
+- `GET /auth/me` - Get current user profile
+- `PATCH /auth/me` - Update profile (username, bio, etc.)
+- `POST /auth/me/avatar` - Upload profile picture to Cloudinary
 
-### Full API Docs
+### Reels
+- `GET /reels` - Get reels feed (paginated)
+- `GET /reels/{id}` - Get single reel
+- `POST /reels` - Upload video reel to Cloudinary
+- `POST /reels/{id}/like` - Like a reel
+- `DELETE /reels/{id}/like` - Unlike a reel
+- `DELETE /reels/{id}` - Delete reel (owner only)
+
+### Stories
+- `GET /stories` - Get active stories (not expired)
+- `POST /stories` - Upload story image (24h expiry)
+
+### Users
+- `GET /users/{username}` - Get public profile by username
+
+### Restaurants
+- `GET /restaurants` - List all restaurants
+- `GET /restaurants/{id}` - Get restaurant details
+- `POST /restaurants/{id}/follow` - Follow restaurant
+- `POST /restaurants` - Create restaurant (authenticated)
+
+### Reviews
+- `GET /reviews` - List reviews
+- `POST /reviews` - Create review (authenticated)
+
+### Orders
+- `GET /orders` - Get user orders
+- `POST /orders` - Place new order
+- `PATCH /orders/{id}/status` - Update order status
+
+### Full Interactive API Docs
 Visit: http://localhost:8000/docs (when backend is running)
 
 ## 📧 Email Templates
@@ -205,8 +303,44 @@ Visit: http://localhost:8000/docs (when backend is running)
 - ✅ Bottom navigation
 - ✅ Optimized videos
 - ✅ Responsive layouts
+- ✅ Touch gestures for stories
+- ✅ Viewport-based video playback
+- ✅ Floating action buttons
 
-## 🆘 Support
+## � How to Use Key Features
+
+### Upload a Reel
+1. Click the **+** button in the top bar
+2. Enter a title for your reel
+3. Select a video file (MP4, MOV, etc.)
+4. Click "Upload" - video uploads to Cloudinary
+5. Reel appears in feed with auto-generated thumbnail
+
+### Add a Story
+1. Click the **+** button in the Stories bar
+2. Select an image file
+3. Story uploads to Cloudinary and appears in feed
+4. Automatically expires after 24 hours
+
+### Update Profile
+1. Go to Profile tab
+2. Click "Edit profile"
+3. Upload profile picture, change username, add bio/website/phone
+4. Click "Save Changes" - avatar uploads to Cloudinary
+
+### Share Your Profile
+1. Go to Profile tab
+2. Click "Share profile" button
+3. URL like `http://localhost:5173/u/yourname` is copied
+4. Share URL with anyone - they can view your public profile
+
+### Like a Reel
+1. Scroll through reels feed
+2. Click the ❤️ heart icon on any reel
+3. Like count updates in real-time
+4. Like is persisted to MongoDB
+
+## �🆘 Support
 
 ### Common Issues
 
@@ -228,10 +362,49 @@ Try suggested usernames
 Or modify with numbers/underscores
 ```
 
-**"Failed to upload video"**
+**"Failed to upload video/image"**
+```bash
+# Check Cloudinary credentials in backend/.env
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# Video/image size limits
+Videos: under 100MB
+Images: under 10MB
 ```
-Check Cloudinary credentials in backend/.env
-Ensure all 3 values are set correctly
+
+**"Stories not showing"**
+```
+Stories expire after 24 hours automatically
+Upload a new story to see it in feed
+Backend filters out expired stories
+```
+
+**"Reels not loading"**
+```bash
+# 1. Check backend is running
+python backend/run.py
+# Should see: Server running on http://0.0.0.0:8000
+
+# 2. Check frontend API URL
+# In feastverse/.env:
+VITE_API_URL=http://localhost:8000
+
+# 3. Check browser console for errors
+```
+
+**"Can't upload avatar"**
+```
+Stories expire after 24 hours
+Upload a new story to see it appear
+Click "Your Story" or any story ring to view
+```
+
+**Profile picture not cropping**
+```
+Make sure react-easy-crop is installed:
+npm install react-easy-crop
 ```
 
 ### Documentation
@@ -261,10 +434,67 @@ Your Feastverse app includes everything:
 - ✅ Complete backend with MongoDB Atlas
 - ✅ React frontend with modern UI
 - ✅ Google OAuth authentication
-- ✅ Cloudinary video storage
-- ✅ Email notifications
-- ✅ Username system
-- ✅ 150+ features ready to go
+- ✅ **Cloudinary integration** - Videos, images, avatars all stored in cloud
+- ✅ **Video Reels** - Upload, view, like/unlike with real-time counts
+- ✅ **Instagram Stories** - 24-hour expiring image stories
+- ✅ **Profile System** - Avatar upload, username change, shareable URLs
+- ✅ **Email notifications** - Welcome & username change emails
+- ✅ Restaurant ordering & reviews
+- ✅ Real-time data (no mock/fake content)
+- ✅ 150+ production-ready features
+
+## 🆕 Latest Features (v3.0)
+
+### 📹 Video Reels (Fully Implemented)
+- ✅ Upload videos to Cloudinary via modal
+- ✅ Auto-generated thumbnails
+- ✅ Like/unlike with backend persistence
+- ✅ Real-time like counts from MongoDB
+- ✅ Delete reels (removes from Cloudinary)
+
+### 📸 Instagram-Style Stories
+- ✅ Upload images with 24-hour auto-expiry
+- ✅ Stories bar with "Add Story" button
+- ✅ Backend filters expired stories
+- ✅ Cloudinary image storage
+
+### 👤 Profile Enhancements
+- ✅ Upload avatar to Cloudinary
+- ✅ Change username with email notification
+- ✅ Public shareable profile URLs (`/u/username`)
+- ✅ Edit bio, website, phone
+
+### 🔗 Public Profiles
+- ✅ Share profile link with anyone
+- ✅ View other users' public profiles
+- ✅ `/u/{username}` route implemented
+
+## 🚦 Quick Test Checklist
+
+After starting both servers, test these features:
+
+1. ✅ **Login** - Click "Continue with Google"
+2. ✅ **Choose Username** - Pick unique username (gets welcome email)
+3. ✅ **Upload Reel** - Click + button → select video → uploads to Cloudinary
+4. ✅ **Like Reel** - Click ❤️ on any reel (count persists)
+5. ✅ **Add Story** - Click + in Stories → select image (expires in 24h)
+6. ✅ **Update Profile** - Profile → Edit → upload avatar + change username
+7. ✅ **Share Profile** - Profile → Share → copies URL
+8. ✅ **View Public Profile** - Visit `/u/{your-username}` in browser
+9. ✅ **Browse Restaurants** - Navigate to Restaurants tab
+10. ✅ **Place Order** - Add items to cart → checkout
+
+All features work end-to-end with real cloud storage! 🎊
+- ✨ Share profile with URL
+- ✨ Floating upload button for reels
+- ✨ User info on all reels and stories
+
+### Bug Fixes
+- 🐛 Navigation now instant (no refresh)
+- 🐛 Username editing works properly
+- 🐛 Profile reloads after editing
+- 🐛 All forms properly validated
+- 🐛 Real-time data synchronization
 
 **Start building the future of food social media!** 🚀
 
