@@ -10,7 +10,7 @@ A full-stack food delivery and social media platform with Google OAuth, video re
 - **Profile Management** - Update username, bio, website, phone
 - **Profile Pictures** - Upload avatar to Cloudinary
 - **Public Profiles** - Shareable profile URLs at `/u/{username}`
-- **Email Notifications** - Welcome emails and username change confirmations
+- **Email Notifications** - Welcome emails and all account change notifications
 
 ### 📹 Video Reels (Cloudinary)
 - **Upload Reels** - Upload videos directly to Cloudinary with auto-thumbnails
@@ -98,7 +98,7 @@ Visit: http://localhost:5173
 ✅ Public shareable profile URLs (`/u/{username}`)  
 ✅ Session persistence with JWT  
 ✅ Welcome email on signup  
-✅ Username change notification emails  
+✅ Email notifications for all profile changes (username, bio, website, phone, avatar)  
 
 ### 📹 Video Reels (Full Implementation)
 ✅ Upload video reels to Cloudinary  
@@ -271,11 +271,19 @@ Visit: http://localhost:8000/docs (when backend is running)
 - Feature introduction
 - Username confirmation
 - CTA button
+- Sent when a new user signs up
 
 ### Username Change
 - Confirmation email
 - Before/after display
 - Security notification
+- Sent when username is updated
+
+### Profile Update
+- Lists all changes made
+- Security notification
+- Profile link included
+- Sent for bio, website, phone, or avatar changes
 
 ## 🔒 Security
 
@@ -438,7 +446,7 @@ Your Feastverse app includes everything:
 - ✅ **Video Reels** - Upload, view, like/unlike with real-time counts
 - ✅ **Instagram Stories** - 24-hour expiring image stories
 - ✅ **Profile System** - Avatar upload, username change, shareable URLs
-- ✅ **Email notifications** - Welcome & username change emails
+- ✅ **Email notifications** - Welcome email & notifications for all profile changes
 - ✅ Restaurant ordering & reviews
 - ✅ Real-time data (no mock/fake content)
 - ✅ 150+ production-ready features

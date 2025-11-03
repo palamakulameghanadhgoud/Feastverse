@@ -293,3 +293,143 @@ def send_username_change_email(email_to: str, old_username: str, new_username: s
     
     return send_email(email_to, subject, html_content)
 
+
+def send_profile_update_email(email_to: str, name: str, username: str, changes: dict):
+    """Send email when any profile field is updated"""
+    subject = "Profile Updated - Feastverse"
+    
+    # Build changes list
+    changes_html = ""
+    field_labels = {
+        "bio": "Bio",
+        "website": "Website",
+        "phone": "Phone Number",
+        "picture": "Profile Picture"
+    }
+    
+    for field, value in changes.items():
+        if field in field_labels:
+            label = field_labels[field]
+            if field == "picture":
+                changes_html += f"""
+                <li><strong>{label}:</strong> Updated successfully</li>
+                """
+            else:
+                display_value = value if value else "(Removed)"
+                changes_html += f"""
+                <li><strong>{label}:</strong> {display_value}</li>
+                """
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }}
+            .container {{
+                max-width: 600px;
+                margin: 40px auto;
+                background-color: #ffffff;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }}
+            .header {{
+                background: linear-gradient(135deg, #ff2c55 0%, #ffb703 100%);
+                padding: 30px 20px;
+                text-align: center;
+            }}
+            .header h1 {{
+                color: #ffffff;
+                margin: 0;
+                font-size: 28px;
+            }}
+            .content {{
+                padding: 40px 30px;
+                color: #333333;
+                line-height: 1.6;
+            }}
+            .changes-box {{
+                background-color: #f8f8f8;
+                border-left: 4px solid #ff2c55;
+                padding: 20px;
+                margin: 20px 0;
+                border-radius: 4px;
+            }}
+            .changes-box h3 {{
+                margin-top: 0;
+                color: #ff2c55;
+            }}
+            .changes-box ul {{
+                margin: 10px 0;
+                padding-left: 20px;
+            }}
+            .changes-box li {{
+                margin: 10px 0;
+            }}
+            .button {{
+                display: inline-block;
+                background: linear-gradient(135deg, #ff2c55 0%, #ffb703 100%);
+                color: #ffffff;
+                text-decoration: none;
+                padding: 12px 25px;
+                border-radius: 8px;
+                font-weight: 600;
+                margin: 20px 0;
+            }}
+            .footer {{
+                background-color: #f8f8f8;
+                padding: 20px;
+                text-align: center;
+                color: #666666;
+                font-size: 14px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>✏️ Profile Updated</h1>
+            </div>
+            
+            <div class="content">
+                <p>Hey {name}! 👋</p>
+                
+                <p>Your Feastverse profile has been successfully updated.</p>
+                
+                <div class="changes-box">
+                    <h3>Changes Made:</h3>
+                    <ul>
+                        {changes_html}
+                    </ul>
+                </div>
+                
+                <p>You can view your updated profile anytime at <strong>@{username}</strong>.</p>
+                
+                <center>
+                    <a href="{settings.FRONTEND_URL}/u/{username}" class="button">View Your Profile →</a>
+                </center>
+                
+                <p style="margin-top: 30px; font-size: 14px; color: #666;">
+                    If you didn't make these changes, please contact our support team immediately for security purposes.
+                </p>
+            </div>
+            
+            <div class="footer">
+                <p><strong>Feastverse</strong> - Where Food Lovers Unite</p>
+                <p style="font-size: 12px; color: #999; margin-top: 10px;">
+                    You received this email because your account was updated.<br>
+                    This is a security notification to keep you informed of changes to your account.
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return send_email(email_to, subject, html_content)

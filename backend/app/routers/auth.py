@@ -9,7 +9,7 @@ import tempfile
 from .. import schemas, auth
 from ..database import get_database
 from ..models import UserDB
-from ..email import send_welcome_email, send_username_change_email
+from ..email import send_welcome_email, send_username_change_email, send_profile_update_email
 from ..cloudinary_service import upload_image
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
@@ -176,6 +176,7 @@ async def update_profile(
     db = get_database()
     
     update_data = user_update.dict(exclude_unset=True)
+    email_changes = {}
     
     # If username is being changed, check availability and send email
     if "username" in update_data and update_data["username"]:
@@ -195,7 +196,7 @@ async def update_profile(
         
         old_username = current_user.get("username", "")
         
-        # Send username change email
+        # Send username change email (specific email for username)
         try:
             send_username_change_email(
                 current_user["email"],
@@ -206,6 +207,12 @@ async def update_profile(
         except Exception as e:
             print(f"Failed to send username change email: {e}")
     
+    # Track other profile changes (bio, website, phone)
+    profile_fields = ["bio", "website", "phone"]
+    for field in profile_fields:
+        if field in update_data:
+            email_changes[field] = update_data[field]
+    
     update_data["updated_at"] = datetime.utcnow()
     
     await db.users.update_one(
@@ -214,6 +221,18 @@ async def update_profile(
     )
     
     updated_user = await db.users.find_one({"_id": ObjectId(current_user["_id"])})
+    
+    # Send profile update email for bio, website, phone changes
+    if email_changes:
+        try:
+            send_profile_update_email(
+                current_user["email"],
+                current_user["name"],
+                updated_user.get("username", ""),
+                email_changes
+            )
+        except Exception as e:
+            print(f"Failed to send profile update email: {e}")
     
     return {
         "id": str(updated_user["_id"]),
@@ -251,6 +270,17 @@ async def upload_avatar(
             {"_id": ObjectId(current_user["_id"])},
             {"$set": {"picture": result["url"], "updated_at": datetime.utcnow()}}
         )
+
+        # Send profile update email for avatar change
+        try:
+            send_profile_update_email(
+                current_user["email"],
+                current_user["name"],
+                current_user.get("username", ""),
+                {"picture": result["url"]}
+            )
+        except Exception as e:
+            print(f"Failed to send avatar update email: {e}")
 
         return {"picture": result["url"]}
     finally:
